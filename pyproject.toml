@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "livekit-agent-python"
+version = "0.1.0"
+description = ""
+authors = ["hotbrainy"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+livekit-api = "^0.7.1"
+livekit-agents = "^0.11.1"
+livekit-plugins-openai = "^0.10.5"
+livekit-plugins-deepgram = "^0.6.9"
+python-dotenv = "^1.0.1"
+aiofile = "^3.9.0"
+flask = "^3.0.3"
+pyht = "^0.1.5"
+livekit-plugins-silero = "^0.7.3"
+livekit-plugins-rag = "^0.2.2"
+grpcio = "^1.67.1"
+async-timeout = "^5.0.0"
+exceptiongroup = "^1.2.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

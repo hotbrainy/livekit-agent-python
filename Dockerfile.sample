@@ -1,0 +1,70 @@
+# This is an example Dockerfile that builds a minimal container for running LK Agents
+# syntax=docker/dockerfile:1
+ARG PYTHON_VERSION=3.12.6
+FROM python:${PYTHON_VERSION}-slim
+
+# Prevents Python from writing pyc files.
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Keeps Python from buffering stdout and stderr to avoid situations where
+# the application crashes without emitting any logs due to buffering.
+ENV PYTHONUNBUFFERED=1
+
+ENV LIVEKIT_URL=wss://agent-123456.livekit.cloud
+ENV LIVEKIT_API_KEY=live_api_key
+ENV LIVEKIT_API_SECRET=live_api_secret
+ENV 
+ENV TOGETHER_API_KEY=together_api_key
+ENV CUSTOM_LLM_API_KEY=custom_llm_api_key
+ENV CUSTOM_LLM_API_URL=https://api.together.xyz/v1
+ENV CUSTOM_LLM_API_URL2=https://api.openai.com/v1
+ENV CUSTOM_LLM_MODEL=meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo
+ENV CUSTOM_STT_API_KEY=custom_stt_api_key
+ENV CUSTOM_STT_MODEL=custom_stt_model
+ENV CUSTOM_TTS_API_KEY=custom_tts_api_key
+ENV CUSTOM_TTS_MODEL=nova-2-general
+ENV 
+ENV CUSTOM_LLM_API_KEY=custom_llm_api_key
+ENV OPENAI_API_KEY=sk-proj-open-api-key
+ENV DEEPGRAM_API_KEY=deepgram_api_key
+ENV 
+ENV PLAYHT_USER_ID=playht_user_id
+ENV PLAYHT_API_KEY=play_api_key
+
+
+# Create a non-privileged user that the app will run under.
+# See https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user
+ARG UID=10001
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/home/appuser" \
+    --shell "/sbin/nologin" \
+    --uid "${UID}" \
+    appuser
+
+
+# Install gcc and other build dependencies.
+RUN apt-get update && \
+    apt-get install -y \
+    gcc \
+    g++ \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+USER appuser
+
+RUN mkdir -p /home/appuser/.cache
+RUN chown -R appuser /home/appuser/.cache
+
+WORKDIR /home/appuser
+
+COPY requirements.txt .
+RUN python -m pip install -r requirements.txt
+
+COPY . .
+COPY .env .
+RUN ls /home/appuser
+# Run the application.
+ENTRYPOINT ["python", "agent.py"]
+CMD ["start"]
