@@ -2,7 +2,10 @@ from openai import AsyncClient
 from livekit.plugins import openai
 import httpx
 import os
-
+from .models import (
+    GroqChatModels,
+    TogetherChatModels,
+)
 class LLM(openai.LLM):
     
     @staticmethod
@@ -35,5 +38,37 @@ class LLM(openai.LLM):
             api_key=api_key,
             base_url=base_url,
             client=client,
+            temperature=temperature,
+        )
+
+    @staticmethod
+    def with_groq(
+        *,
+        model: str | GroqChatModels = "llama3-8b-8192",
+        api_key: str | None = None,
+        base_url: str | None = "https://api.groq.com/openai/v1",
+        client: AsyncClient | None = None,
+        user: str | None = None,
+        temperature: float | None = None,
+    ) -> openai.LLM:
+        """
+        Create a new instance of Groq LLM.
+
+        ``api_key`` must be set to your Groq API key, either using the argument or by setting
+        the ``GROQ_API_KEY`` environmental variable.
+        """
+
+        api_key = api_key or os.environ.get("GROQ_API_KEY")
+        if api_key is None:
+            raise ValueError(
+                "Groq API key is required, either as argument or set GROQ_API_KEY environmental variable"
+            )
+
+        return LLM(
+            model=model,
+            api_key=api_key,
+            base_url=base_url,
+            client=client,
+            user=user,
             temperature=temperature,
         )
