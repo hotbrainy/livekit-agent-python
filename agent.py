@@ -14,6 +14,7 @@ from livekit.agents import (
 from livekit.agents.pipeline import VoicePipelineAgent
 from livekit.plugins import deepgram, openai, silero
 from plugins import custom
+import requests
 
 load_dotenv()
 
@@ -58,7 +59,20 @@ async def entrypoint(ctx: JobContext):
 
     def on_save_transcriptions(data: llm.ChatMessage): 
         # You can save the transcription in here.
-        # requests.post(url, body)
+        
+        post_url = os.environ.get("POST_URL")
+        if post_url is None:
+            raise ValueError(
+                "POST_URL is required, either as argument or set POST_URL environmental variable"
+            )
+  
+        data = {
+            "identity":  participant.identity,
+            "script": data.content
+        }
+
+        response = requests.post(post_url, json=data)
+        print(response)
         print(participant.identity)
         print(data.role, data.content) 
 

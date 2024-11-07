@@ -23,6 +23,7 @@ def getToken():
 @app.route('/')
 async def hello():
     msg = request.args.get("q")
+    room = request.args.get("room_id")
     lkapi = api.LiveKitAPI()
     results = await lkapi.room.list_rooms(api.ListRoomsRequest())
     if results.rooms is None:
@@ -30,7 +31,10 @@ async def hello():
     if len(results.rooms) < 1:
       return render_template('index.html', msg="no participants found")
     
-    room = (results.rooms[0])
+    if room is None:
+       raise ValueError("room_id is required, either as argument or add room_id to query parameter")
+    #  room = (results.rooms[0])
+  
     # participants = await lkapi.room.list_participants(api.ListParticipantsRequest(room=room.name))
     # if participants.participants is None :
     #   return render_template('index.html', msg="no participants found")
